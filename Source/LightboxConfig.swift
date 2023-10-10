@@ -67,7 +67,7 @@ public class LightboxConfig {
     public static var enabled = false
     public static var size: CGSize?
     public static var text = NSLocalizedString("Delete", comment: "")
-    public static var image: UIImage? =  UIImage(named: "square.and.arrow.up")
+    public static var image: UIImage?
 
     public static var textAttributes: [NSAttributedString.Key: Any] = [
       .font: UIFont.boldSystemFont(ofSize: 16),
@@ -85,7 +85,7 @@ public class LightboxConfig {
         public static var size: CGSize?
         public static var text = NSLocalizedString("Share", comment: "")
         @available(iOS 13.0, *)
-        public static var systemImage: UIImage? = UIImage(systemName: "square.and.arrow.up")
+        public static var image: UIImage? = UIImage(systemName: "square.and.arrow.up")
         
         public static var textAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.boldSystemFont(ofSize: 16),

@@ -43,7 +43,7 @@ open class HeaderView: UIView {
         
         button.setAttributedTitle(title, for: UIControl.State())
         
-        if let size = LightboxConfig.CloseButton.size {
+        if let size = LightboxConfig.DeleteButton.size {
             button.frame.size = size
         } else {
             button.sizeToFit()
@@ -70,7 +70,7 @@ open class HeaderView: UIView {
             attributes: LightboxConfig.ShareButton.textAttributes)
         
         if #available(iOS 13.0, *) {
-            if let image = LightboxConfig.ShareButton.systemImage {
+            if let image = LightboxConfig.ShareButton.image {
                 let shareImage = image.withConfiguration(UIImage.SymbolConfiguration(weight: .bold))
                 button.setImage(shareImage, for: .normal)
             } else {
@@ -80,7 +80,7 @@ open class HeaderView: UIView {
             button.setAttributedTitle(title, for: UIControl.State())
         }
         
-        if let size = LightboxConfig.DeleteButton.size {
+        if let size = LightboxConfig.ShareButton.size {
             button.frame.size = size
         } else {
             button.sizeToFit()
@@ -139,7 +139,7 @@ extension HeaderView: LayoutConfigurable {
         let centerX = bounds.width / 2 - shareButton.frame.width / 2
 
         shareButton.frame.origin = CGPoint(
-            x: bounds.width - closeButton.frame.width - 17,
+            x: bounds.width - shareButton.frame.width - 17,
             y: topPadding
         )
 
