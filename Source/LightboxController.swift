@@ -485,11 +485,9 @@ extension LightboxController: HeaderViewDelegate {
     }
     
     func headerView(_ headerView: HeaderView, didPressShareButton shareButton: UIButton) {
-        shareButton.isEnabled = false
-        presented = false
-        dismissalDelegate?.lightboxControllerWillDismiss(self)
+        shareButton.isEnabled = true
+        presented = true
         shareDelegate?.lightboxControllerWillShare(self, currentPage)
-        dismiss(animated: true, completion: nil)
     }
     
 }
