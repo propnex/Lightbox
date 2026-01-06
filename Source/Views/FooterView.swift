@@ -45,7 +45,7 @@ open class FooterView: UIView {
     backgroundColor = UIColor.clear
     _ = addGradientLayer(gradientColors)
 
-    [pageLabel, infoLabel, separatorView].forEach { addSubview($0) }
+    [infoLabel].forEach { addSubview($0) }
   }
 
   public required init?(coder aDecoder: NSCoder) {

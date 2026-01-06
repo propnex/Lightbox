@@ -102,6 +102,7 @@ open class LightboxController: UIViewController {
             currentPage = min(numberOfPages - 1, max(0, currentPage))
             footerView.updatePage(currentPage + 1, numberOfPages)
             footerView.updateText(pageViews[currentPage].image.text)
+            headerView.updatePage(currentPage + 1, numberOfPages)
             
             if currentPage == numberOfPages - 1 {
                 seen = true
@@ -219,12 +220,13 @@ open class LightboxController: UIViewController {
             y: view.bounds.height - footerView.frame.height
         )
         
-        headerView.frame = CGRect(
-            x: 0,
-            y: 16,
-            width: view.bounds.width,
-            height: 100
-        )
+        // header view: y always 0, width only
+        headerView.frame.origin = CGPoint(x: 0, y: 0)
+        headerView.frame.size.width = view.bounds.width
+        
+        // let header decide its own height
+        headerView.setNeedsLayout()
+        headerView.layoutIfNeeded()
         
         if !presented {
             presented = true

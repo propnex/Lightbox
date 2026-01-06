@@ -7,6 +7,9 @@ protocol HeaderViewDelegate: AnyObject {
 }
 
 open class HeaderView: UIView {
+    
+    private let contentView = UIView()
+    
     open fileprivate(set) lazy var closeButton: UIButton = { [unowned self] in
         let title = NSAttributedString(
             string: LightboxConfig.CloseButton.text,
@@ -92,20 +95,38 @@ open class HeaderView: UIView {
         return button
     }()
     
+    open fileprivate(set) lazy var pageLabel: UILabel = { [unowned self] in
+      let label = UILabel(frame: CGRect.zero)
+      label.isHidden = !LightboxConfig.PageIndicator.enabled
+      label.numberOfLines = 1
+      return label
+    }()
+    
     weak var delegate: HeaderViewDelegate?
     
     // MARK: - Initializers
     
     public init() {
         super.init(frame: CGRect.zero)
-        
-        backgroundColor = UIColor.clear
-        
-        [closeButton, deleteButton, shareButton].forEach { addSubview($0) }
+        backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        addSubview(contentView)
+        [closeButton, deleteButton, shareButton, pageLabel].forEach {
+            contentView.addSubview($0)
+        }
     }
     
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    open override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        setNeedsLayout()
+    }
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        self.configureLayout()
     }
     
     // MARK: - Actions
@@ -120,40 +141,68 @@ open class HeaderView: UIView {
     @objc func shareButtonDidPress(_ button: UIButton) {
         delegate?.headerView(self, didPressShareButton: button)
     }
+    
+    func updatePage(_ page: Int, _ numberOfPages: Int) {
+      let text = "\(page)/\(numberOfPages)"
+      pageLabel.attributedText = NSAttributedString(string: text,
+        attributes: LightboxConfig.PageIndicator.textAttributes)
+      pageLabel.sizeToFit()
+    }
 }
 
 // MARK: - LayoutConfigurable
 
 extension HeaderView: LayoutConfigurable {
-    
-    @objc public func configureLayout() {
-        let topPadding: CGFloat
 
+    @objc public func configureLayout() {
+
+        let safeTop: CGFloat
         if #available(iOS 11, *) {
-            topPadding = safeAreaInsets.top
+            safeTop = safeAreaInsets.top
         } else {
-            topPadding = 0
+            safeTop = 0
         }
 
-        // Calculate the center position for the share button
-        let centerX = bounds.width / 2 - shareButton.frame.width / 2
-
-        shareButton.frame.origin = CGPoint(
-            x: bounds.width - shareButton.frame.width - 17,
-            y: topPadding
+        let hasNotch = safeTop > 20
+        let topInset = hasNotch ? safeTop : 0
+        frame.size.height = topInset + 60
+        contentView.frame = CGRect(
+            x: 0,
+            y: topInset,
+            width: bounds.width,
+            height: 60
         )
 
-        closeButton.frame.origin = CGPoint(
-            x: 17,
-            y: topPadding
+        let centerY = contentView.bounds.midY
+
+        let isLandscape: Bool
+        if let scene = window?.windowScene {
+            isLandscape = scene.interfaceOrientation.isLandscape
+        } else {
+            isLandscape = false
+        }
+
+        let sidePadding: CGFloat = isLandscape ? 32 : 17
+
+        closeButton.center = CGPoint(
+            x: sidePadding + closeButton.bounds.width / 2,
+            y: centerY
         )
 
-        // Position the share button in the center horizontally
-        deleteButton.frame.origin = CGPoint(
-            x: centerX,
-            y: topPadding
+        shareButton.center = CGPoint(
+            x: contentView.bounds.width - sidePadding - shareButton.bounds.width / 2,
+            y: centerY
         )
 
+        deleteButton.center = CGPoint(
+            x: contentView.bounds.midX,
+            y: centerY
+        )
+
+        pageLabel.center = CGPoint(
+            x: contentView.bounds.midX,
+            y: centerY
+        )
     }
 
 }
